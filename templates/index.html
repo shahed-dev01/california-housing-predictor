@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>California Housing Predictor</title>
+    <style>
+        /* Modern Font and Background */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f0f2f5; 
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h2 { color: #1a1a1a; margin-bottom: 20px; text-align: center; }
+
+        /* The Main White Card Container */
+        .form-container { 
+            background: #ffffff; 
+            padding: 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08); 
+            width: 100%; 
+            max-width: 800px; /* Makes it nice and wide on PC */
+            box-sizing: border-box;
+        }
+
+        .section-title { 
+            font-weight: 600; 
+            color: #2c3e50;
+            margin-top: 20px; 
+            margin-bottom: 15px; 
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e1e4e8;
+            grid-column: 1 / -1; /* Spans the full width of the grid */
+        }
+
+        /* The CSS Grid Magic for Side-by-Side inputs */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Two equal columns on PC */
+            gap: 15px 20px;
+        }
+
+        .input-group { display: flex; flex-direction: column; }
+        
+        label { margin-bottom: 6px; font-size: 14px; font-weight: 600; color: #555; }
+        
+        input { 
+            padding: 10px 12px; 
+            border: 1px solid #ccc; 
+            border-radius: 6px; 
+            font-size: 15px; 
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+        }
+
+        /* Submit Button Styling */
+        button { 
+            grid-column: 1 / -1; /* Makes the button span full width */
+            padding: 14px; 
+            background-color: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            margin-top: 20px; 
+            font-size: 16px; 
+            font-weight: 600;
+            transition: background-color 0.2s ease;
+        }
+        
+        button:hover { background-color: #0056b3; }
+
+        /* The Prediction Result Text */
+        h3 { 
+            text-align: center; 
+            color: #28a745; 
+            background: #e8f5e9; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-top: 20px;
+            width: 100%;
+            max-width: 800px;
+            box-sizing: border-box;
+        }
+
+        /* Mobile Responsiveness: Switches to 1 column on small screens */
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr; /* One column on mobile */
+            }
+            .form-container { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <h2>🏡 California House Price Predictor</h2>
+    
+    <div class="form-container">
+        <form action="/predict" method="post" class="form-grid">
+            
+            <div class="section-title">Location & Demographics</div>
+            
+            <div class="input-group">
+                <label>Longitude</label>
+                <input type="text" name="longitude" required placeholder="e.g. -122.23" value="{{ request.form.get('longitude', '-122.23') }}" />
+            </div>
+            
+            <div class="input-group">
+                <label>Latitude</label>
+                <input type="text" name="latitude" required placeholder="e.g. 37.88" value="{{ request.form.get('latitude', '37.88') }}" />
+            </div>
+
+            <div class="input-group">
+                <label>Housing Median Age</label>
+                <input type="text" name="housing_median_age" required placeholder="e.g. 41.0" value="{{ request.form.get('housing_median_age', '41.0') }}" />
+            </div>
+            
+            <div class="input-group">
+                <label>Median Income (Tens of thousands)</label>
+                <input type="text" name="median_income" required placeholder="e.g. 8.32" value="{{ request.form.get('median_income', '8.32') }}" />
+            </div>
+
+            <div class="section-title">House & Neighborhood Stats</div>
+            
+            <div class="input-group">
+                <label>Total Rooms</label>
+                <input type="text" name="total_rooms" required placeholder="e.g. 880.0" value="{{ request.form.get('total_rooms', '880.0') }}" />
+            </div>
+            
+            <div class="input-group">
+                <label>Total Bedrooms</label>
+                <input type="text" name="total_bedrooms" required placeholder="e.g. 129.0" value="{{ request.form.get('total_bedrooms', '129.0') }}" />
+            </div>
+            
+            <div class="input-group">
+                <label>Population</label>
+                <input type="text" name="population" required placeholder="e.g. 322.0" value="{{ request.form.get('population', '322.0') }}" />
+            </div>
+            
+            <div class="input-group">
+                <label>Households</label>
+                <input type="text" name="households" required placeholder="e.g. 126.0" value="{{ request.form.get('households', '126.0') }}" />
+            </div>
+            
+            <div class="section-title">Ocean Proximity (Enter 1 for Yes, 0 for No)</div>
+            
+            <div class="input-group">
+                <label>Under 1H Ocean</label>
+                <input type="text" name="under_1H_ocean" required placeholder="1 or 0" value="{{ request.form.get('under_1H_ocean', '0') }}" />
+            </div>
+            
+            <div class="input-group">
+                <label>Inland</label>
+                <input type="text" name="inland" required placeholder="1 or 0" value="{{ request.form.get('inland', '0') }}" />
+            </div>
+            
+            <div class="input-group">
+                <label>Island</label>
+                <input type="text" name="island" required placeholder="1 or 0" value="{{ request.form.get('island', '0') }}" />
+            </div>
+            
+            <div class="input-group">
+                <label>Near Bay</label>
+                <input type="text" name="near_bay" required placeholder="1 or 0" value="{{ request.form.get('near_bay', '1') }}" />
+            </div>
+            
+            <div class="input-group">
+                <label>Near Ocean</label>
+                <input type="text" name="near_ocean" required placeholder="1 or 0" value="{{ request.form.get('near_ocean', '0') }}" />
+            </div>
+
+            <button type="submit">Predict House Price</button>
+        </form>
+    </div>
+
+    {% if prediction_text %}
+        <h3>{{ prediction_text }}</h3>
+    {% endif %}
+
+</body>
+</html>
